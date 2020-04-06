@@ -1,7 +1,7 @@
 """Controller"""
 
 # Flask
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 # Models
 from product import products
@@ -31,5 +31,38 @@ def retrieveProduct(product_name):
         return jsonify({'product':product[0]})
     return jsonify({'mensaje':'producto no encontrado'})
 
+@app.route('/products',methods=['POST'])
+def createProduct():
+    newProduct = {
+        "name": request.json['name'],
+        "price": request.json.get('price',''),  # Otra forma de obtener los datos. En caso que no contenga el dato colocamos el valor vacio o cualquiera valor por defecto.
+        'cantidad':request.json.get('cantidad','')
+        }
+    products.append(newProduct)
+    return jsonify({
+        'product': newProduct
+    })
+
+@app.route('/products/<string:name>', methods=['PUT'])
+def updateProduct(name):
+    product = [product for product in products if product['name']==name]
+    if(len(product)>0):
+        product[0]['name'] = request.json.get('name',product[0]['name'])
+        product[0]['price'] = request.json.get('price',product[0]['price'])
+        product[0]['cantidad'] = request.json.get('cantidad',product[0]['cantidad'])
+        return jsonify({
+            'mensaje':'Producto actualizado exitosamente',
+            'product':product[0]
+        })
+    return jsonify({'mensaje':'producto no encontrado'})
+
+@app.route('/products/<string:name>', methods=['DELETE'])
+def deleteProduct(name):
+    product=[p for p in products if p['name']==name]
+    if(len(product)>0):
+        products.remove(product[0])
+        return jsonify({'mensaje':'Producto eliminado exitosamente','product':product[0]})
+    return jsonify({'mensaje':'producto no encotrado'})
+    
 if __name__ == "__main__":
     app.run(debug=True, port= 4000)  # Por defecto se ejecuta en el puerto 5000
