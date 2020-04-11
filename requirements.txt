@@ -1,0 +1,8 @@
+# Flask
+Flask==1.1.1
+
+# Flask SQLAlchemy
+Flask-SQLAlchemy==2.4.1
+
+# Flask MashMallow
+flask-marshmallow==0.11.0
